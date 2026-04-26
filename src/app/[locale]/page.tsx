@@ -100,10 +100,6 @@ export default async function HomePage({
           not: null,
           lte: new Date() // Only show posts that should be published by now
         },
-        // 썸네일이 있는 포스트만 노출
-        coverImage: {
-          not: null
-        },
         // 언어별 포스트 필터링: 정확한 언어 매칭
         ...(lang === 'ko' ? {
           // 한국어 페이지: originalLanguage가 'ko'인 경우만
