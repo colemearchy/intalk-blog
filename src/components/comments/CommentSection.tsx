@@ -77,20 +77,6 @@ export default function CommentSection({ postSlug, locale = 'ko' }: CommentSecti
         <CommentForm postSlug={postSlug} onSuccess={fetchComments} locale={locale} />
       </div>
       
-      {/* AI Devil's Advocate 설명 */}
-      {comments.length === 0 && (
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-semibold text-purple-900 mb-2">
-            {isEnglish ? "🤖 AI Devil's Advocate Feature" : "🤖 AI Devil's Advocate 기능"}
-          </h3>
-          <p className="text-purple-700">
-            {isEnglish 
-              ? "This blog uses a unique comment system where AI automatically generates opposing viewpoints. When you post a comment, AI will provide constructive criticism and different perspectives to encourage deeper discussion."
-              : "이 블로그는 AI가 자동으로 반대 의견을 생성하는 독특한 댓글 시스템을 사용합니다. 댓글을 작성하면 AI가 건설적인 비판과 다른 관점을 제시하여 더 깊이 있는 토론을 유도합니다."}
-          </p>
-        </div>
-      )}
-      
       {/* 댓글 목록 */}
       {comments.length > 0 ? (
         <div className="space-y-6">
