@@ -40,6 +40,102 @@ async function searchSimilarKnowledge(queryEmbedding: number[], limit: number = 
   }
 }
 
+// Map Korean insurance topics to relevant English Unsplash search queries
+function getEnglishSearchQuery(category: string, prompt: string): string {
+  // 글 제목의 핵심 주제를 영어 검색어로 매핑
+  const topicMap: Record<string, string> = {
+    // 건강/의료
+    '암보험': 'doctor patient hospital consultation',
+    '치아': 'dentist dental care smile',
+    '실손': 'hospital medical bill healthcare',
+    '건강검진': 'medical checkup health screening',
+    '수술': 'surgery hospital operating room',
+    '입원': 'hospital bed patient care',
+    '정신건강': 'mental health therapy counseling',
+    '백내장': 'eye care ophthalmology vision',
+    '녹내장': 'eye care ophthalmology vision',
+    '여성': 'woman healthcare medical',
+    '간병': 'elderly care nursing senior',
+    '치매': 'elderly care senior support',
+    '통원': 'doctor office medical visit',
+    // 자동차
+    '자동차': 'car driving road safety',
+    '전기차': 'electric car EV charging',
+    '렌트카': 'rental car keys travel',
+    '이륜차': 'motorcycle riding road',
+    '오토바이': 'motorcycle helmet safety',
+    '교통사고': 'car accident safety road',
+    '운전': 'driving car steering wheel',
+    '블랙박스': 'dashboard camera car technology',
+    '자율주행': 'autonomous driving technology future',
+    '침수': 'flood water damage car',
+    // 가족/생활
+    '신혼': 'newlywed couple happy wedding',
+    '어린이': 'happy children family kids',
+    '태아': 'pregnancy baby expecting mother',
+    '출산': 'newborn baby family happiness',
+    '부모님': 'elderly parents family love',
+    '1인 가구': 'single living apartment modern',
+    '맞벌이': 'professional couple working office',
+    '다자녀': 'big family children happy home',
+    // 재산/금융
+    '화재': 'house home building exterior',
+    '전세': 'apartment building real estate',
+    '부동산': 'house key real estate property',
+    '절세': 'tax documents calculator finance',
+    '연금': 'retirement planning piggy bank savings',
+    '저축': 'savings money piggy bank finance',
+    '연말정산': 'tax return documents calculator',
+    // 보험 일반
+    '보험료': 'financial planning calculator money',
+    '보험 해지': 'contract document signing pen',
+    '보험 약관': 'reading document contract terms',
+    '보험 분쟁': 'legal documents dispute resolution',
+    '보험금 청구': 'paperwork documents filing claim',
+    '보험 설계': 'financial advisor meeting consultation',
+    '보장분석': 'data analysis charts financial review',
+    '승환계약': 'contract signing agreement business',
+    '고지의무': 'checklist form medical questionnaire',
+    // 특수
+    '여행': 'travel airplane passport luggage',
+    '펫': 'pet dog veterinary care',
+    '반려동물': 'pet dog cat veterinary',
+    '골프': 'golf course green sport',
+    '배달': 'delivery rider motorcycle scooter',
+    '자영업': 'small business shop owner store',
+    '프리랜서': 'freelancer laptop working cafe',
+    '직장인': 'office worker professional business',
+    // 트렌드
+    '인슈어테크': 'fintech technology smartphone app',
+    '디지털': 'digital technology smartphone modern',
+    '빅데이터': 'data analytics technology dashboard',
+    '블록체인': 'blockchain technology digital network',
+    '웨어러블': 'smartwatch wearable health fitness',
+    'MZ세대': 'young professional smartphone modern',
+    'ESG': 'sustainability green environment business',
+  };
+
+  // 제목에서 매칭되는 키워드 찾기
+  for (const [keyword, query] of Object.entries(topicMap)) {
+    if (prompt.includes(keyword)) {
+      return query;
+    }
+  }
+
+  // 카테고리 기반 기본값
+  const categoryDefaults: Record<string, string> = {
+    '생명보험': 'family protection umbrella safety',
+    '손해보험': 'home property protection insurance',
+    '자동차보험': 'car driving road automobile',
+    '건강보험': 'doctor healthcare medical stethoscope',
+    '보험 상식': 'documents contract pen signing',
+    '보험 트렌드': 'technology innovation digital future',
+    '보험 설계': 'financial advisor consultation planning',
+  };
+
+  return categoryDefaults[category] || 'insurance financial protection family';
+}
+
 // Generate slug from title
 function generateSlug(title: string): string {
   return title
@@ -98,9 +194,9 @@ async function generateBlogPost(topic: BlogTopic, index: number) {
       };
     }
 
-    // Step 5.5: Fetch cover image from Unsplash using keywords
+    // Step 5.5: Fetch cover image from Unsplash using English keywords
     if (!parsedContent.coverImage) {
-      const searchQuery = topic.keywords.slice(0, 2).join(' ') || topic.category;
+      const searchQuery = getEnglishSearchQuery(topic.category, topic.prompt);
       console.log(`🖼️  Unsplash 이미지 검색: "${searchQuery}"`);
       const image = await searchUnsplashImage(searchQuery);
       if (image) {
